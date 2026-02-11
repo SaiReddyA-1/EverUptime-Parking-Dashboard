@@ -1,0 +1,37 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Sora:wght@500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+html.dark {
+  color-scheme: dark;
+}
+
+:root[data-theme='aurora'] {
+  color-scheme: light;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+}
+
+:root[data-theme='aurora'] .app-shell {
+  background: linear-gradient(180deg, #fff6f2 0%, #ffe9dd 30%, #fff5e9 100%);
+  color: #341f2b;
+}
+
+:root[data-theme='aurora'] .app-shell .dark\:bg-slate-900\/45,
+:root[data-theme='aurora'] .app-shell .dark\:bg-slate-900\/50,
+:root[data-theme='aurora'] .app-shell .dark\:bg-slate-900\/60,
+:root[data-theme='aurora'] .app-shell .dark\:bg-slate-900\/70 {
+  background: rgba(255, 245, 238, 0.8);
+}
