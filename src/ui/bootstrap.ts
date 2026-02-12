@@ -121,8 +121,8 @@ export const createParkingSystem = () => {
     }));
 
     const snapshot: PersistedParkingState = {
-      buildingId: building.buildingId,
-      buildingName: building.buildingName,
+      buildingId: building.id,
+      buildingName: building.name,
       floors: floorsSnapshot,
       tickets: ticketSnapshot,
       ticketSequence: ticketService.getSequence()
@@ -135,11 +135,18 @@ export const createParkingSystem = () => {
     floorRepository,
     slotRepository,
     ticketService,
-    building.buildingId,
+    building.id,
+    building.name,
     saveState
   );
 
-  const admitService = new AdmitService(floorRepository, slotRepository, saveState);
+  const admitService = new AdmitService(
+    floorRepository,
+    slotRepository,
+    building.id,
+    building.name,
+    saveState
+  );
 
   if (!persistedState) {
     saveState();

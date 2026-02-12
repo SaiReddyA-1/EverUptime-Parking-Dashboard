@@ -1,4 +1,5 @@
 import { Vehicle } from '../domain/Vehicle';
+import { Building } from '../domain/Building';
 import type { IFloorRepository } from '../repositories/FloorRepository';
 import type { ISlotRepository } from '../repositories/SlotRepository';
 import { TicketService } from './TicketService';
@@ -41,15 +42,20 @@ export class ParkingService {
     private readonly slotRepository: ISlotRepository,
     private readonly ticketService: TicketService,
     private readonly buildingId: string,
+    private readonly buildingName: string,
     private readonly onStateChange: () => void
   ) {}
 
+  private createBuildingView(): Building {
+    const building = new Building(this.buildingId, this.buildingName);
+    this.floorRepository.getAll().forEach((floor) => building.addFloor(floor));
+    return building;
+  }
+
   public parkVehicle(vehicleNumber: string, vehicleType: VehicleType, preferredFloorId?: string | null) {
     const vehicle = new Vehicle(vehicleNumber.trim().toUpperCase(), vehicleType);
-
-    const available = preferredFloorId
-      ? this.slotRepository.findAvailableSlotInFloor(preferredFloorId, vehicle.vehicleType)
-      : this.slotRepository.findAvailableSlot(vehicle.vehicleType);
+    const building = this.createBuildingView();
+    const available = building.findAvailableSlot(vehicle.vehicleType, preferredFloorId);
 
     if (!available) {
       if (preferredFloorId) {
@@ -62,7 +68,7 @@ export class ParkingService {
       throw new SlotTypeMismatchError();
     }
 
-    available.slot.occupy();
+    building.parkVehicleInSlot(available.floor.floorId, available.slot.slotId);
 
     const ticket = this.ticketService.createTicket({
       vehicleNumber: vehicle.vehicleNumber,
@@ -82,12 +88,11 @@ export class ParkingService {
       throw new TicketAlreadyClosedError();
     }
 
-    const slotRecord = this.slotRepository.getSlotById(ticket.slotId);
-    if (!slotRecord) {
+    const building = this.createBuildingView();
+    const releasedSlot = building.unparkVehicleFromSlot(ticket.floorId, ticket.slotId);
+    if (!releasedSlot) {
       throw new Error('Ticket not allocated or slot is empty');
     }
-
-    slotRecord.slot.release();
     const closedTicket = this.ticketService.closeTicket(ticketId);
     this.onStateChange();
 

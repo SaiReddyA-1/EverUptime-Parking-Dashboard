@@ -10,10 +10,9 @@ import { TicketService } from './TicketService';
 
 const setup = () => {
   const building = new Building('BLD-TEST', 'Test Building');
-  const floor = new Floor('F1', 'Floor 1', [
-    new ParkingSlot('F1-TW-01', 'TWO_WHEELER'),
-    new ParkingSlot('F1-FW-01', 'FOUR_WHEELER')
-  ]);
+  const floor = new Floor('F1', 'Floor 1');
+  floor.addSlot(new ParkingSlot('F1-TW-01', 'TWO_WHEELER'));
+  floor.addSlot(new ParkingSlot('F1-FW-01', 'FOUR_WHEELER'));
   building.addFloor(floor);
 
   const floorRepository = new InMemoryFloorRepository();
@@ -28,7 +27,8 @@ const setup = () => {
     floorRepository,
     slotRepository,
     ticketService,
-    building.buildingId,
+    building.id,
+    building.name,
     () => undefined
   );
 
