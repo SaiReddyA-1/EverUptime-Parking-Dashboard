@@ -1,4 +1,4 @@
-import type { VehicleType } from './types';
+import type { VehicleType } from "./types";
 
 export class Vehicle {
   public readonly vehicleNumber: string;
